@@ -1,4 +1,4 @@
-// go-appbox installs AppImages into the current user's application menu.
+// appbox installs AppImages into the current user's application menu.
 package main
 
 import (
@@ -29,7 +29,7 @@ func userPaths() (paths, error) {
 	if err != nil {
 		return paths{}, err
 	}
-	data := filepath.Join(home, ".local", "share", "go-appbox")
+	data := filepath.Join(home, ".local", "share", "appbox")
 	return paths{data, filepath.Join(data, "apps"), filepath.Join(data, "icons"), filepath.Join(data, "records"), filepath.Join(home, ".local", "share", "applications")}, nil
 }
 
@@ -68,7 +68,7 @@ func uniqueID(records, base string) string {
 }
 
 func findIcon(appimage, id, icons string) (string, error) {
-	tmp, err := os.MkdirTemp("", "go-appbox-")
+	tmp, err := os.MkdirTemp("", "appbox-")
 	if err != nil {
 		return "", err
 	}
@@ -182,7 +182,7 @@ func add(sourceArg, customName string) error {
 	if err != nil {
 		return err
 	}
-	desktop := filepath.Join(p.desktop, "go-appbox-"+id+".desktop")
+	desktop := filepath.Join(p.desktop, "appbox-"+id+".desktop")
 	content := strings.Join([]string{"[Desktop Entry]", "Type=Application", "Name=" + displayName, "Exec=" + desktopExec(installed), "Terminal=false", "Categories=Utility;"}, "\n")
 	if icon != "" {
 		content += "\nIcon=" + icon
@@ -239,7 +239,7 @@ func list() error {
 	}
 	entries, err := os.ReadDir(p.records)
 	if errors.Is(err, os.ErrNotExist) {
-		fmt.Println("No AppImages installed by go-appbox.")
+		fmt.Println("No AppImages installed by appbox.")
 		return nil
 	}
 	if err != nil {
@@ -307,7 +307,7 @@ func main() {
 		os.Exit(2)
 	}
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "go-appbox:", err)
+		fmt.Fprintln(os.Stderr, "appbox:", err)
 		os.Exit(1)
 	}
 }

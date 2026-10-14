@@ -11,7 +11,7 @@ func TestAddCustomNameExtractsIconAndRemoves(t *testing.T) {
 	temporary := t.TempDir()
 	t.Setenv("HOME", filepath.Join(temporary, "home"))
 	source := filepath.Join(temporary, "download.AppImage")
-	// This tiny fake AppImage implements the extraction flag used by go-appbox.
+	// This tiny fake AppImage implements the extraction flag used by appbox.
 	script := "#!/bin/sh\nmkdir -p squashfs-root/usr/share/icons\nprintf icon > squashfs-root/usr/share/icons/my-great-app.png\n"
 	if err := os.WriteFile(source, []byte(script), 0755); err != nil {
 		t.Fatal(err)

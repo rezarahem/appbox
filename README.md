@@ -1,7 +1,7 @@
 # appbox
 
 A small, dependency-free Go CLI for installing AppImages for the current user.
-It copies the file to `~/.local/share/go-appbox`, creates an application-menu
+It copies the file to `~/.local/share/appbox`, creates an application-menu
 entry, and extracts an icon if it can find one.
 
 ## Build and install
