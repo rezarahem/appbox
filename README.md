@@ -1,8 +1,9 @@
 # appbox
 
-A small, dependency-free Go CLI for installing AppImages for the current user.
-It copies the file to `~/.local/share/appbox`, creates an application-menu
-entry, and extracts an icon if it can find one.
+A small, dependency-free Go CLI for installing AppImages and Linux executables
+for the current user. It copies the file to `~/.local/share/appbox` and creates
+an application-menu entry. For AppImages, it also extracts an icon if it can
+find one.
 
 ## Build and install
 
@@ -22,9 +23,12 @@ then run `appbox` from anywhere.
 
 ```sh
 appbox add ~/Downloads/Example.AppImage "Example App"
+appbox add ./my-program "My Program"
 appbox list
-appbox rm example-app
+appbox rm my-program
 ```
 
-If no custom name is provided, it uses the AppImage filename. `rm` only removes
-the AppImage, icon, and desktop entry created by appbox.
+If no custom name is provided, it uses the file name. AppImages are detected by
+their `.AppImage` extension; other files are installed as executables and made
+executable. `rm` removes the installed file, icon, and desktop entry created by
+appbox.

@@ -147,9 +147,7 @@ func add(sourceArg, customName string) error {
 	if err != nil || info.IsDir() {
 		return fmt.Errorf("file not found: %s", sourceArg)
 	}
-	if !strings.EqualFold(filepath.Ext(source), ".appimage") {
-		return errors.New("expected a file ending in .AppImage")
-	}
+	isAppImage := strings.EqualFold(filepath.Ext(source), ".appimage")
 	p, err := userPaths()
 	if err != nil {
 		return err
@@ -171,16 +169,23 @@ func add(sourceArg, customName string) error {
 	if id == "" {
 		id = uniqueID(p.records, "appimage")
 	}
-	installed := filepath.Join(p.apps, id+".AppImage")
+	installedName := id
+	if isAppImage {
+		installedName += ".AppImage"
+	}
+	installed := filepath.Join(p.apps, installedName)
 	if err := copyFile(source, installed); err != nil {
 		return err
 	}
 	if err := os.Chmod(installed, info.Mode()|0111); err != nil {
 		return err
 	}
-	icon, err := findIcon(installed, id, p.icons)
-	if err != nil {
-		return err
+	icon := ""
+	if isAppImage {
+		icon, err = findIcon(installed, id, p.icons)
+		if err != nil {
+			return err
+		}
 	}
 	desktop := filepath.Join(p.desktop, "appbox-"+id+".desktop")
 	content := strings.Join([]string{"[Desktop Entry]", "Type=Application", "Name=" + displayName, "Exec=" + desktopExec(installed), "Terminal=false", "Categories=Utility;"}, "\n")
@@ -197,9 +202,11 @@ func add(sourceArg, customName string) error {
 		return err
 	}
 	refreshDesktopDatabase(p.desktop)
-	status := "no icon found"
+	status := "binary installed"
 	if icon != "" {
 		status = "icon found"
+	} else if isAppImage {
+		status = "no icon found"
 	}
 	fmt.Printf("Added %s (%s). Run: %s rm %s\n", displayName, status, commandName, id)
 	return nil
@@ -259,15 +266,17 @@ func list() error {
 }
 
 func usage() {
-	fmt.Printf(`%s — simple AppImage installer
+	fmt.Printf(`%s — simple application installer
 
 Usage:
-  %s add APPIMAGE [NAME]     Install an AppImage; NAME is optional.
-  %s rm NAME                 Remove an installed AppImage.
-  %s list                    List installed AppImages.
+  %s add FILE [NAME]         Install an AppImage or executable; NAME is optional.
+  %s rm NAME                 Remove an installed application.
+  %s list                    List installed applications.
 
-Example: %s add MyApp.AppImage "My App Name"
-`, commandName, commandName, commandName, commandName, commandName)
+Examples:
+  %s add MyApp.AppImage "My App Name"
+  %s add ./my-program "My Program"
+`, commandName, commandName, commandName, commandName, commandName, commandName)
 }
 
 func main() {
